@@ -9,7 +9,7 @@ function loadPPButton(jsonContent) {
         });
     }).then(function (paypalCheckoutInstance) {
         return paypalCheckoutInstance.loadPayPalSDK({
-            currency: 'USD',
+            currency: currency,
             intent: 'capture'
         });
     }).then(function (paypalCheckoutInstance) {
@@ -85,4 +85,18 @@ function loadPPButton(jsonContent) {
 document.getElementById('loadPPButton').addEventListener('click', function () {
     const jsonContent = editor.get();
     loadPPButton(jsonContent);
+})
+
+document.getElementById('savePP').addEventListener('change', function () {
+    const checkbox = document.getElementById('savePP');
+    if(checkbox.checked){
+        jsonContent.requestBillingAgreement = true;
+        jsonContent.billingAgreementDetails = {};
+        jsonContent.billingAgreementDetails.description = "PayPal Billing Agreement Description test";
+    }else{
+        delete jsonContent.requestBillingAgreement;
+        delete jsonContent.billingAgreementDetails;
+    }
+    editor.set(jsonContent);
+    editor.expandAll();
 })

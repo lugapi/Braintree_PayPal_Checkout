@@ -1,7 +1,7 @@
 const jsonContent = {
     flow: 'checkout', // Required
     amount: 10.00, // Required
-    currency: 'USD', // Required, must match the currency passed in with loadPayPalSDK
+    currency: currency, // Required, must match the currency passed in with loadPayPalSDK
 
     intent: 'capture', // Must match the intent passed in with loadPayPalSDK
 

@@ -23,6 +23,7 @@ const {
   BRAINTREE_MERCHANT_ID,
   BRAINTREE_API_KEY,
   BRAINTREE_API_SECRET,
+  BRAINTREE_CURRENCY,
   PORT = 8887
 } = process.env;
 
@@ -52,13 +53,14 @@ app.get("/", (req, res) => {
   res.send("Hello Braintree !");
 });
 
-app.get("/client_token", async (req, res) => {
+app.get("/paypal", async (req, res) => {
   try {
     const clientToken = await generateAccessToken();
     // res.send(clientToken);
 
     res.render("index", {
-      clientToken: clientToken
+      clientToken: clientToken,
+      currency: BRAINTREE_CURRENCY
     });
   } catch (error) {
     res.status(500).send("Erreur lors de la génération du jeton client");
