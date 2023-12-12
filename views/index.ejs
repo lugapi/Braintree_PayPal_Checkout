@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome To Braintree</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load the client component. -->
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/client.min.js"></script>
+    <!-- Load the PayPal Checkout component. -->
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/paypal-checkout.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsoneditor.min.js"
+        integrity="sha512-KQaWlVsZF0iPXCR8p176hVrg/rlw+smy8dpJ+vwiuvoHyGr8PTVvaAV4ZmsAYdCvMRP8e3sB9pl1mRuaunaXrg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsoneditor.css"
+        integrity="sha512-XmjnlPNi5tkrcqMGEG7ZOpGhny9t8fdCk0oxZxjFaqF3cl3UKv+51GgeUoY3Rf/ZaGtBvMZ9dDhceGZ1hcOyMw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="container mx-auto">
+        <div class="ppContent flex gap-4 my-4">
+            <div class="leftSide w-1/2 flex flex-col gap-4">
+                <div id="jsoneditor"></div>
+                <button id="loadPPButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Load PayPal Button</button>
+                <div id="paypal-button"></div>
+            </div>
+            <div class="rightSide w-1/2">
+                <div class="flex flex-col gap-2 bg-slate-100 p-4 rounded-lg">
+                    <h2 class="underline">Client Token received from server :</h2>
+                    <p class="overflow-x-auto">
+                        <%= clientToken %>
+                    </p>
+                </div>
+                <div class="PPresult flex flex-col gap-2 bg-slate-100 my-4 p-4 rounded-lg">
+                    <h2 class="underline">Payload received :</h2>
+                    <pre class="overflow-x-auto">Click on PayPal button ...</pre>
+                </div>
+                <div class="PPresultCreateTransaction flex flex-col gap-2 bg-slate-100 my-4 p-4 rounded-lg">
+                    <h2 class="underline">Transaction create response :</h2>
+                    <pre class="overflow-x-auto">Wait for the transaction to be created ...</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    const clientToken = '<%= clientToken %>';
+</script>
+
+<script src="jsonEditor.js"></script>
+<script src="app.js"></script>
+
+</html>
