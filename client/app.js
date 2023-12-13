@@ -1,6 +1,7 @@
 // Fonction to configure each PayPal button
-function configurePayPalButton(paypalCheckoutInstance, jsonContent, containerId, fundingSource = paypal.FUNDING.PAYPAL) {
-    return paypal.Buttons({
+function configurePayPalButton(paypalCheckoutInstance, jsonContent, containerId, fundingSource = paypal.FUNDING.PAYPAL, customerID = null) {
+    console.log('funding source : ', fundingSource)
+    const options = {
         style: {
             layout: 'vertical',
             color: 'gold',
@@ -11,30 +12,6 @@ function configurePayPalButton(paypalCheckoutInstance, jsonContent, containerId,
         createOrder: function () {
             return paypalCheckoutInstance.createPayment(jsonContent);
         },
-
-        onShippingChange: function (data, actions) {
-            // Perform some validation or calculation logic on 'data'
-
-            console.log("onShippingChange data : ", data)
-            console.log("onShippingChange lineItems : ", jsonContent.lineItems)
-
-            if (data.shipping_address.country_code === 'US') {
-                console.log("Shipping country selected " + data.shipping_address.country_code)
-                return paypalCheckoutInstance.updatePayment({
-                    amount: jsonContent.amount, // Required
-                    currency: jsonContent.currency,
-                    lineItems: jsonContent.lineItems, // Required
-                    paymentId: data.paymentId, // Required
-                    // shippingOptions: shippingOptions, // Optional
-                });
-            } else if (data.shipping_address.country_code === 'FR') {
-                console.log("Shipping not allowed in " + data.shipping_address.country_code)
-                return actions.reject();
-            }
-
-            return actions.resolve();
-        },
-
         onApprove: function (data, actions) {
             return paypalCheckoutInstance.tokenizePayment(data).then(function (payload) {
                 console.log('PayPal payment token', payload);
@@ -68,48 +45,115 @@ function configurePayPalButton(paypalCheckoutInstance, jsonContent, containerId,
         onError: function (err) {
             console.error('PayPal error', err);
         }
-    }).render(containerId);
+    }
+
+    // Check if customerID is provided
+    if (customerID) {
+        // If yes, add onShippingChange logic to the options object
+        options.onShippingChange = function (data, actions) {
+            // Perform some validation or calculation logic on 'data'
+
+            console.log("onShippingChange data : ", data)
+            console.log("onShippingChange lineItems : ", jsonContent.lineItems)
+
+            if (data.shipping_address.country_code === 'US') {
+                console.log("Shipping country selected " + data.shipping_address.country_code)
+                return paypalCheckoutInstance.updatePayment({
+                    amount: jsonContent.amount, // Required
+                    currency: jsonContent.currency,
+                    lineItems: jsonContent.lineItems, // Required
+                    paymentId: data.paymentId, // Required
+                    // shippingOptions: shippingOptions, // Optional
+                });
+            } else if (data.shipping_address.country_code === 'FR') {
+                console.log("Shipping not allowed in " + data.shipping_address.country_code)
+                return actions.reject();
+            }
+
+            return actions.resolve();
+        }
+    }
+
+    return paypal.Buttons(options).render(containerId);
 }
 
 // Fonction principale pour charger les boutons PayPal
-function loadPPButton(jsonContent) {
-    braintree.client.create({
-        authorization: clientToken
-    }).then(function (clientInstance) {
-        return braintree.paypalCheckout.create({
-            client: clientInstance
-        });
-    }).then(function (paypalCheckoutInstance) {
-        // Conditionally include 'enable-funding' property
-        const enableFundingOption = document.getElementById('enableFundingCheckbox').checked ? 'paylater' : null;
+async function loadPPButton(jsonContent) {
+    try {
+        const clientToken = await getClientToken();
+        document.getElementById('clientTokenReturned').innerHTML = clientToken
+        // document.getElementById('clientTokenReturned').classList.remove('hidden');
 
-        const sdkOptions = {
-            components: 'buttons,messages',
-            currency: currency,
-            intent: 'capture',
-            dataAttributes: {
-                amount: String(jsonContent.amount)
+        braintree.client.create({
+            authorization: clientToken
+        }).then(function (clientInstance) {
+            return braintree.paypalCheckout.create({
+                client: clientInstance,
+                autoSetDataUserIdToken: true,
+            });
+        }).then(function (paypalCheckoutInstance) {
+            // Conditionally include 'enable-funding' property
+            const enableFundingOption = document.getElementById('enableFundingCheckbox').checked ? 'paylater' : null;
+
+            const sdkOptions = {
+                components: 'buttons,messages',
+                currency: jsonContent.currency,
+                intent: jsonContent.intent,
+                dataAttributes: {
+                    amount: jsonContent.amount
+                },
+            };
+
+            // Include 'enable-funding' only if the checkbox is checked
+            if (enableFundingOption) {
+                sdkOptions['enable-funding'] = enableFundingOption;
             }
-        };
 
-        // Include 'enable-funding' only if the checkbox is checked
-        if (enableFundingOption) {
-            sdkOptions['enable-funding'] = enableFundingOption;
+            return paypalCheckoutInstance.loadPayPalSDK(sdkOptions);
+        }).then(function (paypalCheckoutInstance) {
+
+            let custValue = null;
+            document.getElementById('customerID').value !== "" ? custValue = null : custValue = document.getElementById('customerID').value;
+
+            // Load standard PayPal button
+            configurePayPalButton(paypalCheckoutInstance, jsonContent, '#paypal-button', paypal.FUNDING.PAYPAL, custValue);
+
+            // Load BNPL PayPal button if BNPL is checked on the front-end
+            if (document.getElementById('enableFundingCheckbox').checked) {
+                configurePayPalButton(paypalCheckoutInstance, jsonContent, '#paypal-paylater-button', paypal.FUNDING.PAYLATER, custValue);
+            }
+        }).then(function () {
+            // This function will be called when the PayPal button is set up and ready to be used
+            console.log("Buttons displayed and ready!");
+        });
+    } catch (error) {
+        console.error('Error getting client token:', error);
+    }
+}
+
+async function getClientToken() {
+    try {
+        const result = await fetch('/clientToken', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                customerID: document.getElementById('customerID').value,
+            })
+        });
+
+        if (result.ok) {
+            const data = await result.json();
+            return data.clientToken;
+        } else {
+            const text = await result.text();
+            throw new Error(text);
         }
-
-        return paypalCheckoutInstance.loadPayPalSDK(sdkOptions);
-    }).then(function (paypalCheckoutInstance) {
-        // Load standard PayPal button
-        configurePayPalButton(paypalCheckoutInstance, jsonContent, '#paypal-button');
-
-        // Load BNPL PayPal button if BNPL is checked on the front-end
-        if (document.getElementById('enableFundingCheckbox').checked) {
-            configurePayPalButton(paypalCheckoutInstance, jsonContent, '#paypal-paylater-button', paypal.FUNDING.PAYLATER);
-        }
-    }).then(function () {
-        // This function will be called when the PayPal button is set up and ready to be used
-        console.log("Buttons displayed and ready!");
-    });
+    } catch (error) {
+        console.error('Error getting client token:', error);
+        throw error;
+    }
 }
 
 document.getElementById('loadPPButton').addEventListener('click', function () {

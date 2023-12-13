@@ -44,11 +44,20 @@
                 <div class="flex items-center">
                     <input id="enableFundingCheckbox" type="checkbox"
                         class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500">
-                    <label for="enableFundingCheckbox" class="ml-2 text-sm font-medium text-gray-900">Enable BNPL button <span
-                            class="italic">(See Pay Later <a
+                    <label for="enableFundingCheckbox" class="ml-2 text-sm font-medium text-gray-900">Enable BNPL button
+                        <span class="italic">(See Pay Later <a
                                 href="https://developer.paypal.com/braintree/docs/guides/paypal/pay-later-offers/javascript/v3/#pay-later-button"
                                 target="_blank"
                                 class="underline text-blue-600 hover:text-blue-800">documentation</a>)</span></label>
+                </div>
+
+                <div>
+                    <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Existing Client / returning customer 
+                        <span class="italic">
+                            (See Returning customer experience 
+                            <a href="https://developer.paypal.com/braintree/docs/guides/paypal/checkout-with-vault/javascript/v3/#returning-customer-experience" target="_blank" class="underline text-blue-600 hover:text-blue-800">documentation</a>)
+                        </span></label>
+                    <input type="text" id="customerID" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="125105815" required>
                 </div>
 
                 <button id="loadPPButton"
@@ -60,9 +69,7 @@
             <div class="rightSide w-full lg:w-1/2">
                 <div class="flex flex-col gap-2 bg-slate-100 p-4 rounded-lg">
                     <h2 class="underline">Client Token received from server :</h2>
-                    <p class="overflow-x-auto">
-                        <%= clientToken %>
-                    </p>
+                    <p id="clientTokenReturned" class="overflow-x-auto"></p>
                 </div>
                 <div class="PPresult flex flex-col gap-2 bg-slate-100 my-4 p-4 rounded-lg">
                     <h2 class="underline">Payload received :</h2>
@@ -77,10 +84,7 @@
     </div>
 </body>
 
-
-
 <script>
-    const clientToken = '<%= clientToken %>';
     const currency = '<%= currency %>'
 </script>
 

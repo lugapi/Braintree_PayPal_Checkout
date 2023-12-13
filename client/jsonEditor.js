@@ -6,7 +6,7 @@ const jsonContent = {
     intent: 'capture', // Must match the intent passed in with loadPayPalSDK
 
     enableShippingAddress: true,
-    shippingAddressEditable: true,
+    shippingAddressEditable: false,
     lineItems: [{
         quantity: 2,
         unitAmount: 40,

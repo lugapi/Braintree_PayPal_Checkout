@@ -34,11 +34,13 @@ const gateway = new braintree.BraintreeGateway({
 const generateAccessToken = async (customerID = null) => {
   try {
     const response = await gateway.clientToken.generate({
-      customerId: customerID
+      customerId: String(customerID),
     });
 
     // Send access token to front-end
     const clientToken = response.clientToken;
+    console.log("customerID :" + customerID);
+    console.log("response : ", response);
     return clientToken;
   } catch (error) {
     console.error("Fail to generate Access Token :", error);
@@ -49,17 +51,23 @@ app.get("/", (req, res) => {
   res.send("Hello Braintree !");
 });
 
-app.get("/paypal", async (req, res) => {
+app.post("/clientToken", async (req, res) => {
   try {
-    const clientToken = await generateAccessToken();
+    const customerID = req.body.customerID;
+    console.log("req.body customerID", req.body.customerID);
+    const clientToken = await generateAccessToken(customerID);
 
-    res.render("index", {
-      clientToken: clientToken,
-      currency: BRAINTREE_CURRENCY
-    });
+    return res.json({ clientToken });
   } catch (error) {
-    res.status(500).send("Erreur lors de la génération du jeton client");
+    res.status(500).send("Fail to generate Access Token");
   }
+});
+
+app.get("/paypal", async (req, res) => {
+  // render paypal view
+  res.render("index", {
+    currency: BRAINTREE_CURRENCY,
+  })
 });
 
 app.post("/transaction/create", async (req, res) => {
