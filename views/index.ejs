@@ -21,9 +21,11 @@
 <body>
     <div class="container mx-auto">
         <div class="header w-full flex flex-col gap-2">
-                <h1 class="font-bold text-2xl">PayPal Checkout via Braintree</h1>
-                <p>This is an example of how to use PayPal Checkout with Braintree</p>
-                <p>Documentation : <a href="https://developer.paypal.com/braintree/docs/guides/paypal/overview/javascript/v3/" target="_blank" class="underline text-blue-600 hover:text-blue-800">PayPal Checkout</a></p>
+            <h1 class="font-bold text-2xl">PayPal Checkout via Braintree</h1>
+            <p>This is an example of how to use PayPal Checkout with Braintree</p>
+            <p>Documentation : <a
+                    href="https://developer.paypal.com/braintree/docs/guides/paypal/overview/javascript/v3/"
+                    target="_blank" class="underline text-blue-600 hover:text-blue-800">PayPal Checkout</a></p>
         </div>
         <div class="ppContent flex flex-col lg:flex-row gap-4 my-4">
             <div class="leftSide w-full lg:w-1/2 flex flex-col gap-4">
@@ -33,15 +35,27 @@
                     <input id="savePP" type="checkbox"
                         class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500">
                     <label for="savePP" class="ml-2 text-sm font-medium text-gray-900">Save PayPal Button <span
-                            class="italic">(See <a
+                            class="italic">(See VAULT <a
                                 href="https://developer.paypal.com/braintree/docs/guides/paypal/checkout-with-vault/javascript/v3/"
                                 target="_blank"
                                 class="underline text-blue-600 hover:text-blue-800">documentation</a>)</span></label>
                 </div>
+
+                <div class="flex items-center">
+                    <input id="enableFundingCheckbox" type="checkbox"
+                        class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500">
+                    <label for="enableFundingCheckbox" class="ml-2 text-sm font-medium text-gray-900">Enable BNPL button <span
+                            class="italic">(See Pay Later <a
+                                href="https://developer.paypal.com/braintree/docs/guides/paypal/pay-later-offers/javascript/v3/#pay-later-button"
+                                target="_blank"
+                                class="underline text-blue-600 hover:text-blue-800">documentation</a>)</span></label>
+                </div>
+
                 <button id="loadPPButton"
                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Load PayPal
                     Button</button>
                 <div id="paypal-button"></div>
+                <div id="paypal-paylater-button"></div>
             </div>
             <div class="rightSide w-full lg:w-1/2">
                 <div class="flex flex-col gap-2 bg-slate-100 p-4 rounded-lg">
