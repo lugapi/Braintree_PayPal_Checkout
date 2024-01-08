@@ -47,10 +47,6 @@ const generateAccessToken = async (customerID = null) => {
   }
 };
 
-app.get("/", (req, res) => {
-  res.send("Hello Braintree !");
-});
-
 app.post("/clientToken", async (req, res) => {
   try {
     const customerID = req.body.customerID;
@@ -63,7 +59,7 @@ app.post("/clientToken", async (req, res) => {
   }
 });
 
-app.get("/paypal", async (req, res) => {
+app.get("/", async (req, res) => {
   // render paypal view
   res.render("index", {
     currency: BRAINTREE_CURRENCY,
