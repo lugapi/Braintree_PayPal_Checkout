@@ -17,3 +17,9 @@ To start the project, run the following command:
 
 ```bash
 npm start
+```
+
+
+## Screenshot
+
+![ppcheckout](./screenshots/ppcheckout.png)
