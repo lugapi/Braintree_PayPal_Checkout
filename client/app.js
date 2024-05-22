@@ -82,7 +82,7 @@ async function loadPPButton(jsonContent) {
     try {
         const clientToken = await getClientToken();
         document.getElementById('clientTokenReturned').innerHTML = clientToken
-        // document.getElementById('clientTokenReturned').classList.remove('hidden');
+
 
         braintree.client.create({
             authorization: clientToken
@@ -148,7 +148,7 @@ async function getClientToken() {
             return data.clientToken;
         } else {
             const text = await result.text();
-            throw new Error(text);
+            return text;
         }
     } catch (error) {
         console.error('Error getting client token:', error);
@@ -161,9 +161,11 @@ document.getElementById('loadPPButton').addEventListener('click', function () {
     loadPPButton(jsonContent);
 });
 
-document.getElementById('savePP').addEventListener('change', function () {
-    const checkbox = document.getElementById('savePP');
-    if (checkbox.checked) {
+const checkboxSavePP = document.getElementById('savePP');
+const checkboxLineItems = document.getElementById('lineItems');
+
+checkboxSavePP.addEventListener('change', function () {
+    if (checkboxSavePP.checked) {
         jsonContent.requestBillingAgreement = true;
         jsonContent.billingAgreementDetails = {};
         jsonContent.billingAgreementDetails.description = "PayPal Billing Agreement Description test";
@@ -172,5 +174,29 @@ document.getElementById('savePP').addEventListener('change', function () {
         delete jsonContent.billingAgreementDetails;
     }
     editor.set(jsonContent);
-    // editor.expandAll();
+    editor.expandAll();
+});
+
+checkboxLineItems.addEventListener('change', function () {
+    if (checkboxLineItems.checked) {        
+        jsonContent.lineItems = [{
+            quantity: 2,
+            unitAmount: 40,
+            unitTaxAmount: 0,
+            name: "Nice Shoes",
+            description: "The best Shoes",
+            productCode: "SKU001"
+        }, {
+            quantity: 1,
+            unitAmount: 20,
+            unitTaxAmount: 0,
+            name: "Nice Dress",
+            description: "The best Dress",
+            productCode: "SKU002"
+        }]
+    } else {
+        delete jsonContent.lineItems;
+    }
+    editor.set(jsonContent);
+    editor.expandAll();
 });

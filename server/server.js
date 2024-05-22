@@ -1,6 +1,5 @@
 import "dotenv/config";
 import express from "express";
-import fetch from "node-fetch";
 import path from "path";
 
 import braintree from "braintree";
@@ -53,6 +52,9 @@ app.post("/clientToken", async (req, res) => {
     console.log("req.body customerID", req.body.customerID);
     const clientToken = await generateAccessToken(customerID);
 
+    if(!clientToken) {
+      return res.status(400).json({error: "Invalid customer ID"});
+    }
     return res.json({ clientToken });
   } catch (error) {
     res.status(500).send("Fail to generate Access Token");

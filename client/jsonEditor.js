@@ -7,21 +7,6 @@ const jsonContent = {
 
     enableShippingAddress: true,
     shippingAddressEditable: false,
-    lineItems: [{
-        quantity: 2,
-        unitAmount: 40,
-        unitTaxAmount: 0,
-        name: "Nice Shoes",
-        description: "The best Shoes",
-        productCode: "SKU001"
-    }, {
-        quantity: 1,
-        unitAmount: 20,
-        unitTaxAmount: 0,
-        name: "Nice Dress",
-        description: "The best Dress",
-        productCode: "SKU002"
-    }],
     shippingAddressOverride: {
         recipientName: 'Scruff McGruff',
         line1: '1234 Main St.',
@@ -43,4 +28,4 @@ const options = {
 const editor = new JSONEditor(container, options);
 
 editor.set(jsonContent);
-// editor.expandAll();
+editor.expandAll();
