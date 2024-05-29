@@ -1,13 +1,23 @@
 // Fonction to configure each PayPal button
-function configurePayPalButton(paypalCheckoutInstance, jsonContent, containerId, fundingSource = paypal.FUNDING.PAYPAL, customerID = null) {
+
+styles = {
+    layout: 'vertical',
+    color: 'black',
+    shape: 'rect',
+    label: 'paypal'
+}
+
+BNPLstyles = {
+    layout: 'vertical',
+    color: 'blue',
+    shape: 'rect',
+    label: 'paypal'
+}
+
+function configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, containerId, fundingSource = paypal.FUNDING.PAYPAL, customerID = null) {
     console.log('funding source : ', fundingSource)
     const options = {
-        style: {
-            layout: 'vertical',
-            color: 'gold',
-            shape: 'rect',
-            label: 'paypal'
-        },
+        style: styles,
         fundingSource: fundingSource,
         createOrder: function () {
             return paypalCheckoutInstance.createPayment(jsonContent);
@@ -83,7 +93,6 @@ async function loadPPButton(jsonContent) {
         const clientToken = await getClientToken();
         document.getElementById('clientTokenReturned').innerHTML = clientToken
 
-
         braintree.client.create({
             authorization: clientToken
         }).then(function (clientInstance) {
@@ -116,11 +125,11 @@ async function loadPPButton(jsonContent) {
             document.getElementById('customerID').value !== "" ? custValue = null : custValue = document.getElementById('customerID').value;
 
             // Load standard PayPal button
-            configurePayPalButton(paypalCheckoutInstance, jsonContent, '#paypal-button', paypal.FUNDING.PAYPAL, custValue);
+            configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, '#paypal-button', paypal.FUNDING.PAYPAL, custValue);
 
             // Load BNPL PayPal button if BNPL is checked on the front-end
             if (document.getElementById('enableFundingCheckbox').checked) {
-                configurePayPalButton(paypalCheckoutInstance, jsonContent, '#paypal-paylater-button', paypal.FUNDING.PAYLATER, custValue);
+                configurePayPalButton(paypalCheckoutInstance, BNPLstyles, jsonContent, '#paypal-paylater-button', paypal.FUNDING.PAYLATER, custValue);
             }
         }).then(function () {
             // This function will be called when the PayPal button is set up and ready to be used
