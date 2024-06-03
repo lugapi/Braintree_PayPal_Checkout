@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load the client component. -->
     <script src="https://js.braintreegateway.com/web/3.97.3/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/data-collector.min.js"></script>
     <!-- Load the PayPal Checkout component. -->
     <script src="https://js.braintreegateway.com/web/3.97.3/js/paypal-checkout.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsoneditor.min.js"
@@ -71,6 +72,16 @@
                     Button</button>
                 <div id="paypal-button"></div>
                 <div id="paypal-paylater-button"></div>
+                <form action="post" id="device-data-form" class="hidden"></form>
+                <div id="bnpl" class="hidden">
+                    <div
+                        data-pp-message
+                        data-pp-layout="text"
+                        data-pp-text-color="black"
+                        data-pp-logo-type="inline"
+                        data-pp-amount="">
+                    </div>
+                </div>
             </div>
             <div class="rightSide w-full lg:w-1/2">
                 <div class="flex flex-col gap-2 bg-slate-100 p-4 rounded-lg">

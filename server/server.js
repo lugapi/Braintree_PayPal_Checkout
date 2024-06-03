@@ -71,12 +71,14 @@ app.get("/", async (req, res) => {
 app.post("/transaction/create", async (req, res) => {
   try {
     const nonceFromTheClient = req.body.payment_method_nonce;
+    const deviceDataFromTheClient = req.body.deviceData;
+    
     console.log("req.body", req.body);
 
     gateway.transaction.sale({
       amount: req.body.amount,
       paymentMethodNonce: nonceFromTheClient,
-      // deviceData: deviceDataFromTheClient,
+      deviceData: deviceDataFromTheClient,
       options: {
         submitForSettlement: true
       }

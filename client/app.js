@@ -33,7 +33,8 @@ function configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, cont
                     },
                     body: JSON.stringify({
                         payment_method_nonce: payload.nonce,
-                        amount: jsonContent.amount
+                        amount: jsonContent.amount,
+                        deviceData: document.querySelector('#device_data') ? document.querySelector('#device_data').value : null,
                     })
                 }).then(function (result) {
                     if (result.ok) {
@@ -87,11 +88,54 @@ function configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, cont
     return paypal.Buttons(options).render(containerId);
 }
 
+function loadBNPLBanner(jsonContent) {
+    console.log("jsonContent", jsonContent);
+
+    console.log("loadBNPLBanner");
+    // Load the script
+    const bannerDiv = document.querySelector('#bnpl');
+    const banner = document.querySelector('#bnpl > div');
+    banner.setAttribute('data-pp-amount', jsonContent.amount);
+
+    console.log("banner : ", banner);
+
+    bannerDiv.classList.remove('hidden');
+}
+
+
 // Fonction principale pour charger les boutons PayPal
 async function loadPPButton(jsonContent) {
+    document.getElementById('paypal-button').innerHTML = "";
+    document.getElementById('paypal-paylater-button').innerHTML = "";
+    loadBNPLBanner(jsonContent);
     try {
+
         const clientToken = await getClientToken();
         document.getElementById('clientTokenReturned').innerHTML = clientToken
+
+        const clientInstance = await braintree.client.create({
+            authorization: clientToken
+        });
+
+        const dataCollectorInstance = await braintree.dataCollector.create({
+            client: clientInstance
+        });
+
+        var form = document.getElementById('device-data-form');
+        var deviceDataInput = form['device_data'];
+
+        if (deviceDataInput == null) {
+            deviceDataInput = document.createElement('input');
+            deviceDataInput.name = 'device_data';
+            deviceDataInput.id = 'device_data';
+            deviceDataInput.type = 'hidden';
+            form.appendChild(deviceDataInput);
+        }
+
+        deviceDataInput.value = dataCollectorInstance.deviceData;
+
+        console.log('Device Data:', deviceDataInput.value);
+
 
         braintree.client.create({
             authorization: clientToken
@@ -187,7 +231,7 @@ checkboxSavePP.addEventListener('change', function () {
 });
 
 checkboxLineItems.addEventListener('change', function () {
-    if (checkboxLineItems.checked) {        
+    if (checkboxLineItems.checked) {
         jsonContent.lineItems = [{
             quantity: 2,
             unitAmount: 40,
