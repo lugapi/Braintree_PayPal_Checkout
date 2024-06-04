@@ -198,6 +198,10 @@ async function loadPPButton(jsonContent) {
             // Load standard PayPal button
             configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, '#paypal-button', paypal.FUNDING.PAYPAL, custValue);
 
+            //////////// ANOTHER PP BUTTON TO TEST MULTIPLE DIPLAY OF PAYPAL BUTTONS ////////////
+            // Load standard PayPal button
+            // configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, '#paypal-button2', paypal.FUNDING.PAYPAL, custValue);
+
             // Load BNPL PayPal button if BNPL is checked on the front-end
             if (document.getElementById('enableFundingCheckbox').checked) {
                 configurePayPalButton(paypalCheckoutInstance, BNPLstyles, jsonContent, '#paypal-paylater-button', paypal.FUNDING.PAYLATER, custValue);
