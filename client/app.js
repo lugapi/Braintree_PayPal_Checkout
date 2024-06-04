@@ -14,11 +14,38 @@ BNPLstyles = {
     label: 'paypal'
 }
 
+const checkboxConditionsDiv = document.querySelector("#checkDiv");
+const checkboxConditions = document.querySelector("#check");
+
 function configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, containerId, fundingSource = paypal.FUNDING.PAYPAL, customerID = null) {
     console.log('funding source : ', fundingSource)
     const options = {
         style: styles,
         fundingSource: fundingSource,
+        // onInit is called when the button first renders
+        onInit(data, actions) {
+
+            checkboxConditionsDiv.classList.remove("hidden");
+            
+            // Disable the buttons
+            actions.disable();
+
+            // Listen for changes to the checkbox
+            checkboxConditions.addEventListener("change", function (event) {
+                // Enable or disable the button when it is checked or unchecked
+                if (event.target.checked) {
+                    actions.enable();
+                } else {
+                    actions.disable();
+                }
+            });
+        },
+        onClick: function (data, actions) {
+            console.log('onClick');
+            if (!checkboxConditions.checked) {
+                alert('Please check the conditions to proceed to the payment');
+            }
+        },
         createOrder: function () {
             return paypalCheckoutInstance.createPayment(jsonContent);
         },
