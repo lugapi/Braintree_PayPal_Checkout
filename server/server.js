@@ -20,6 +20,7 @@ const {
   BRAINTREE_API_KEY,
   BRAINTREE_API_SECRET,
   BRAINTREE_CURRENCY,
+  BRAINTREE_MAID,
   PORT = 8887
 } = process.env;
 
@@ -27,13 +28,14 @@ const gateway = new braintree.BraintreeGateway({
   environment: braintree.Environment.Sandbox,
   merchantId: BRAINTREE_MERCHANT_ID,
   publicKey: BRAINTREE_API_KEY,
-  privateKey: BRAINTREE_API_SECRET
+  privateKey: BRAINTREE_API_SECRET,
 });
 
 const generateAccessToken = async (customerID = null) => {
   try {
     const response = await gateway.clientToken.generate({
       customerId: String(customerID),
+      merchantAccountId: BRAINTREE_MAID
     });
 
     // Send access token to front-end
