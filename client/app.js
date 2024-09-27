@@ -72,7 +72,11 @@ function configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, cont
                         });
                     }
                 }).then(function (result) {
+                    console.log('Transaction result', result);
                     document.querySelector('.PPresultCreateTransaction pre').innerHTML = JSON.stringify(result, 0, 2);
+                    if(result.transaction.customer.id){
+                        document.getElementById('customerID').value = result.transaction.customer.id;
+                    }
                 });
             });
         },
@@ -132,6 +136,7 @@ function loadBNPLBanner(jsonContent) {
 
 // Fonction principale pour charger les boutons PayPal
 async function loadPPButton(jsonContent) {
+    let enableDeviceData = document.getElementById('enableDeviceData');
     document.getElementById('paypal-button').innerHTML = "";
     document.getElementById('paypal-paylater-button').innerHTML = "";
     loadBNPLBanner(jsonContent);
@@ -140,28 +145,30 @@ async function loadPPButton(jsonContent) {
         const clientToken = await getClientToken();
         document.getElementById('clientTokenReturned').innerHTML = clientToken
 
-        const clientInstance = await braintree.client.create({
-            authorization: clientToken
-        });
-
-        const dataCollectorInstance = await braintree.dataCollector.create({
-            client: clientInstance
-        });
-
-        var form = document.getElementById('device-data-form');
-        var deviceDataInput = form['device_data'];
-
-        if (deviceDataInput == null) {
-            deviceDataInput = document.createElement('input');
-            deviceDataInput.name = 'device_data';
-            deviceDataInput.id = 'device_data';
-            deviceDataInput.type = 'hidden';
-            form.appendChild(deviceDataInput);
+        if(enableDeviceData){
+            const clientInstance = await braintree.client.create({
+                authorization: clientToken
+            });
+            
+            const dataCollectorInstance = await braintree.dataCollector.create({
+                client: clientInstance
+            });
+            
+            var form = document.getElementById('device-data-form');
+            var deviceDataInput = form['device_data'];
+            
+            if (deviceDataInput == null) {
+                deviceDataInput = document.createElement('input');
+                deviceDataInput.name = 'device_data';
+                deviceDataInput.id = 'device_data';
+                deviceDataInput.type = 'hidden';
+                form.appendChild(deviceDataInput);
+            }
+            
+            deviceDataInput.value = dataCollectorInstance.deviceData;
+            
+            console.log('Device Data:', deviceDataInput.value);
         }
-
-        deviceDataInput.value = dataCollectorInstance.deviceData;
-
-        console.log('Device Data:', deviceDataInput.value);
 
 
         braintree.client.create({
