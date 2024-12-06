@@ -16,6 +16,8 @@ BNPLstyles = {
 
 const checkboxConditionsDiv = document.querySelector("#checkDiv");
 const checkboxConditions = document.querySelector("#check");
+const captureCheckbox = document.getElementById('captureCheckbox')
+
 
 function configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, containerId, fundingSource = paypal.FUNDING.PAYPAL, customerID = null) {
     console.log('funding source : ', fundingSource)
@@ -26,7 +28,7 @@ function configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, cont
         onInit(data, actions) {
 
             checkboxConditionsDiv.classList.remove("hidden");
-            
+
             // Disable the buttons
             actions.disable();
 
@@ -53,31 +55,36 @@ function configurePayPalButton(paypalCheckoutInstance, styles, jsonContent, cont
             return paypalCheckoutInstance.tokenizePayment(data).then(function (payload) {
                 console.log('PayPal payment token', payload);
                 document.querySelector('.PPresult pre').innerHTML = JSON.stringify(payload, 0, 2);
-                fetch('/transaction/create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        payment_method_nonce: payload.nonce,
-                        amount: jsonContent.amount,
-                        deviceData: document.querySelector('#device_data') ? document.querySelector('#device_data').value : null,
-                    })
-                }).then(function (result) {
-                    if (result.ok) {
-                        return result.json();
-                    } else {
-                        return result.text().then(function (text) {
-                            return Promise.reject(text);
-                        });
-                    }
-                }).then(function (result) {
-                    console.log('Transaction result', result);
-                    document.querySelector('.PPresultCreateTransaction pre').innerHTML = JSON.stringify(result, 0, 2);
-                    if(result.transaction.customer.id){
-                        document.getElementById('customerID').value = result.transaction.customer.id;
-                    }
-                });
+                if (captureCheckbox.checked) {
+                    fetch('/transaction/create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            payment_method_nonce: payload.nonce,
+                            amount: jsonContent.amount,
+                            deviceData: document.querySelector('#device_data') ? document.querySelector('#device_data').value : null,
+                        })
+                    }).then(function (result) {
+                        if (result.ok) {
+                            return result.json();
+                        } else {
+                            return result.text().then(function (text) {
+                                return Promise.reject(text);
+                            });
+                        }
+                    }).then(function (result) {
+                        console.log('Transaction result', result);
+                        document.querySelector('.PPresultCreateTransaction pre').innerHTML = JSON.stringify(result, 0, 2);
+                        if (result.transaction.customer.id) {
+                            document.getElementById('customerID').value = result.transaction.customer.id;
+                        }
+                    });
+                } else {
+                    console.log('capture not asked')
+                    document.querySelector('.PPresultCreateTransaction pre').innerHTML = "Create the transaction manually with a Transaction Sale call."
+                }
             });
         },
         onCancel: function (data) {
@@ -145,18 +152,18 @@ async function loadPPButton(jsonContent) {
         const clientToken = await getClientToken();
         document.getElementById('clientTokenReturned').innerHTML = clientToken
 
-        if(enableDeviceData){
+        if (enableDeviceData) {
             const clientInstance = await braintree.client.create({
                 authorization: clientToken
             });
-            
+
             const dataCollectorInstance = await braintree.dataCollector.create({
                 client: clientInstance
             });
-            
+
             var form = document.getElementById('device-data-form');
             var deviceDataInput = form['device_data'];
-            
+
             if (deviceDataInput == null) {
                 deviceDataInput = document.createElement('input');
                 deviceDataInput.name = 'device_data';
@@ -164,9 +171,9 @@ async function loadPPButton(jsonContent) {
                 deviceDataInput.type = 'hidden';
                 form.appendChild(deviceDataInput);
             }
-            
+
             deviceDataInput.value = dataCollectorInstance.deviceData;
-            
+
             console.log('Device Data:', deviceDataInput.value);
         }
 
@@ -189,6 +196,7 @@ async function loadPPButton(jsonContent) {
                 dataAttributes: {
                     amount: jsonContent.amount
                 },
+                commit: false
             };
 
             // Include 'enable-funding' only if the checkbox is checked

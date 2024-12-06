@@ -54,8 +54,8 @@ app.post("/clientToken", async (req, res) => {
     console.log("req.body customerID", req.body.customerID);
     const clientToken = await generateAccessToken(customerID);
 
-    if(!clientToken) {
-      return res.status(400).json({error: "Invalid customer ID"});
+    if (!clientToken) {
+      return res.status(400).json({ error: "Invalid customer ID" });
     }
     return res.json({ clientToken });
   } catch (error) {
@@ -74,7 +74,7 @@ app.post("/transaction/create", async (req, res) => {
   try {
     const nonceFromTheClient = req.body.payment_method_nonce;
     const deviceDataFromTheClient = req.body.deviceData;
-    
+
     console.log("req.body", req.body);
 
     gateway.transaction.sale({
@@ -83,7 +83,8 @@ app.post("/transaction/create", async (req, res) => {
       deviceData: deviceDataFromTheClient,
       options: {
         submitForSettlement: true
-      }
+      },
+      orderId: `test_Braintree_timestamp_${Date.now()}`,
     }).then(result => {
       console.log(result);
       res.json(result);
