@@ -85,6 +85,21 @@ app.post("/transaction/create", async (req, res) => {
         submitForSettlement: true
       },
       orderId: `test_Braintree_timestamp_${Date.now()}`,
+      // lineItems: [
+      //   {
+      //     name: "Product",
+      //     kind: "debit",
+      //     quantity: 2,
+      //     unitAmount: 50,
+      //     unitTaxAmount: 0,
+      //     totalAmount: 100.00,
+      //     productCode: "54321",
+      //     upcCode: "012345678912", //New field
+      //     upcType: "UPC-A", //New field
+      //     url: "https://example.com", //New field
+      //     imageUrl: "https://example.com/product.jpeg", //New field
+      //   }
+      // ]
     }).then(result => {
       console.log(result);
       res.json(result);

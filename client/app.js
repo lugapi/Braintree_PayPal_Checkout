@@ -192,6 +192,7 @@ async function loadPPButton(jsonContent) {
             const sdkOptions = {
                 components: 'buttons,messages',
                 currency: jsonContent.currency,
+                'buyer-country': 'FR',
                 intent: jsonContent.intent,
                 dataAttributes: {
                     amount: jsonContent.amount
@@ -284,14 +285,22 @@ checkboxLineItems.addEventListener('change', function () {
             unitTaxAmount: 0,
             name: "Nice Shoes",
             description: "The best Shoes",
-            productCode: "SKU001"
+            productCode: "SKU001",
+            upcCode: "012345678912",
+            upcType: "UPC-A",
+            url: "https://example.com",
+            imageUrl: "https://example.com/product1.jpeg",
         }, {
             quantity: 1,
             unitAmount: 20,
             unitTaxAmount: 0,
             name: "Nice Dress",
             description: "The best Dress",
-            productCode: "SKU002"
+            productCode: "SKU002",
+            upcCode: "012345678919",
+            upcType: "UPC-B",
+            url: "https://example.com",
+            imageUrl: "https://example.com/product2.jpeg",
         }]
     } else {
         delete jsonContent.lineItems;
